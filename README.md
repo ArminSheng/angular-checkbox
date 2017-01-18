@@ -1,2 +1,4 @@
 # angular-checkbox
-angular checkboxer
+
+
+**Angular Checkbox** is a plugin for AngularJs

@@ -4,12 +4,20 @@
     <title>checkbox</title>
 </head>
 <script src="../lib/angular.min.js"></script>
+<script src="../src/index.js"></script>
+<script src="../src/services/Checkboxer.js"></script>
+<script src="../src/services/CheckAll.js"></script>
+<script src="../src/services/CheckItem.js"></script>
+<script src="../src/services/CheckDirective.js"></script>
+<script src="../src/directives/CheckAll.js"></script>
+<script src="../src/directives/CheckItem.js"></script>
 <script src="controller/checkboxCtrl.js"></script>
 <body ng-controller="checkboxCtrl">
     <ul>
-        <label><input type="checkbox" name="all" ng-model="checkAll" check-all>全选</label>
+        <label>
+          <input type="checkbox" name="all" ng-model="checkboxer.checkAll" check-all checkboxer="checkboxer">全选</label>
         <li ng-repeat="item in list">
-            <input type="checkbox" ng-model="item.checked" check-item ng-disabled="item.status">
+            <input type="checkbox" ng-model="item.checked" checkboxer="checkboxer" check-item ng-disabled="item.status">
             <label>{{ item.name }}</label>
         </li>
     </ul>

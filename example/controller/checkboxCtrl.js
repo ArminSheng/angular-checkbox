@@ -1,8 +1,10 @@
-var checkbox = angular.module("checkbox", []);
+var checkbox = angular.module("checkbox", ['angular-checkbox']);
 
 checkbox
-    .controller('checkboxCtrl', function($scope) {
-        $scope.checkAll = false;
+    .controller('checkboxCtrl', function($scope, Checkboxer) {
+        // init checkboxer
+        $scope.checkboxer = new Checkboxer();
+
         $scope.list = [
             { id: 1, name: 'armin1', status: false },
             { id: 2, name: 'armin1', status: false },

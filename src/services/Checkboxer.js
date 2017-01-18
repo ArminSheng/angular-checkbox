@@ -17,7 +17,7 @@ export default function __func() {
         constructor(options) {
             extend(this, {
                 items: [],
-                isAllChecked : false
+                isAllChecked: false
             }, options);
         }
 
@@ -36,20 +36,29 @@ export default function __func() {
 
             return returnArr;
         }
+
         /**
          * Check all checkbox
          */
         checkAll() {
             var self = this;
             forEach(this.items, function(item) {
-                item.check(this.checkAll);
+                item.check(self.checkAll);
             });
         }
+
         /*
-         * Checkboxer all
+         * check the main checkbox
          */
-        checkAll(check) {
+        _checkTheAll(check) {
             this.checkAll.check(check);
+        }
+
+        /*
+         * add check item to list
+         */
+        addToList(item) {
+            this.items.push(item);
         }
 
         /**
@@ -59,6 +68,28 @@ export default function __func() {
             ngModel.$setViewValue(check);
             ngModel.$render();
         }
+
+        /**
+         * check the queue whether it all checked or not
+         */
+        checkQueue() {
+            var _isAllChecked = true;
+            forEach(this.items, function(item) {
+                if (!item.checked) {
+                    _isAllChecked = false;
+                }
+            });
+
+            this.isAllChecked = _isAllChecked;
+            this._checkTheAll(_isAllChecked);
+         }
+
+         /**
+         * Clear the list
+         */
+         clearQueue() {
+            this.items = [];
+         }
     }
 
     return Checkboxer;

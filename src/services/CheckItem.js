@@ -4,14 +4,12 @@ let {
 } = angular;
 
 export default function __func(CheckDirective) {
-    return class CheckAll extends CheckDirective {
+    return class CheckItem extends CheckDirective {
         /**
-         * Creates instance of {CheckAll} object
+         * Creates instance of {CheckItem} object
          * @param {Object} options
          * @param {Object} options.checkboxer
          * @param {HTMLElement} options.element
-         * @param {Object} options.events
-         * @param {Object} options.ngModel
          * @constructor
          */
         constructor(options) {
@@ -25,26 +23,20 @@ export default function __func(CheckDirective) {
             super(entended);
             init();
         }
-
         /**
-         * Initialize
+         *Push check item into checkboxer
          */
-         init() {
-            this.checkboxer.checkAll = this;
-         }
+        init() {
+            !this.disabled && this.checkboxer.addToList(this);
+        }
 
         /**
          * Event handler
          */
          onClick(event) {
-            this.checkboxer.checkAll();
+            this.checkboxer.checkQueue();
             console.log(this)
          }
-
-         check(check) {
-            this.checkboxer.check(this.ngModel, check);
-         }
-
 
     }
 }
