@@ -1,6 +1,6 @@
+'use strict';
 let {
-    extend,
-    forEach
+    extend
 } = angular;
 
 export default function __func(CheckDirective) {
@@ -13,31 +13,35 @@ export default function __func(CheckDirective) {
          * @constructor
          */
         constructor(options) {
-            var entended = extend(this, options, {
-                checked: false,
+            var entended = extend(options, {
+                _checked: false,
                 events: {
-                    click: 'onClick'
+                    change: 'onChange'
                 }
             });
 
             super(entended);
-            init();
+            this._init();
         }
         /**
          *Push check item into checkboxer
          */
-        init() {
+        _init() {
             !this.disabled && this.checkboxer.addToList(this);
         }
 
         /**
          * Event handler
          */
-         onClick(event) {
+         onChange(event) {
+            this._checked = this.ngModel.$modelValue;
             this.checkboxer.checkQueue();
-            console.log(this)
          }
 
+         check(check) {
+            this.checkboxer.check(this.ngModel, check);
+            this._checked = check;
+         }
     }
 }
 

@@ -10,15 +10,28 @@ export default function __func() {
                 events: {}
             }, options);
 
+            this._saveLinks();
             this.bind();
+
         }
         /**
          * Bind events
          */
          bind() {
             for (let key in this.events) {
-                this.element.bind(key, this.events[key]);
+                var prop = this.events[key];
+                this.element.bind(key, this[prop]);
             }
          }
+         /**
+         * Saves links to functions
+         * @private
+         */
+        _saveLinks() {
+            for(var key in this.events) {
+                var prop = this.events[key];
+                this[prop] = this[prop].bind(this);
+            }
+        }
     }
 }

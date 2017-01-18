@@ -34,10 +34,11 @@ class WebpackConfig {
           // https://github.com/babel/babel-loader
           {
             test: /\.js$/,
+            exclude: /node_modules/,
             loader: 'babel'
           },
           // https://github.com/webpack/json-loader
-          // {test: /\.json$/, loader: 'json'},
+          {test: /\.json$/, loader: 'json'},
           // https://github.com/webpack/html-loader
           // {test: /\.html$/, loader: 'raw'}
         ]

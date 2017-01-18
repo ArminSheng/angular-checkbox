@@ -1,4 +1,4 @@
-var checkbox = angular.module("checkbox", ['angular-checkbox']);
+var checkbox = angular.module("checkbox", ['angularCheckbox']);
 
 checkbox
     .controller('checkboxCtrl', function($scope, Checkboxer) {
@@ -23,69 +23,69 @@ checkbox
         }
     })
 
-.directive('checkAll', function($rootScope) {
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function(scope, element, attrs, model) {
-            element.bind('click', function() {
-                $rootScope.$broadcast('eventCheck.All', { checkAll: model.$modelValue });
-            });
+// .directive('checkAll', function($rootScope) {
+//     return {
+//         restrict: 'A',
+//         require: 'ngModel',
+//         link: function(scope, element, attrs, model) {
+//             element.bind('click', function() {
+//                 $rootScope.$broadcast('eventCheck.All', { checkAll: model.$modelValue });
+//             });
 
-            // scope.$on('eventCheck.item', function(e, data) {
-            //     isFull();
-            // });
+//             // scope.$on('eventCheck.item', function(e, data) {
+//             //     isFull();
+//             // });
 
-            // function isFull() {
-            //   var full = true;
-            //   angular.forEach(scope.$eval(attrs.checkAll), function(item) {
-            //     if (item.checked === false) {
-            //       full = false;
-            //     }
-            //   });
+//             // function isFull() {
+//             //   var full = true;
+//             //   angular.forEach(scope.$eval(attrs.checkAll), function(item) {
+//             //     if (item.checked === false) {
+//             //       full = false;
+//             //     }
+//             //   });
 
-            //   check(model, full);
-            // }
+//             //   check(model, full);
+//             // }
 
-            // function _init() {
-            //   var list = scope.$eval(attrs.checkAll);
+//             // function _init() {
+//             //   var list = scope.$eval(attrs.checkAll);
 
-            //   list.forEach(function(item) {});
-            // }
-        }
-    }
-})
+//             //   list.forEach(function(item) {});
+//             // }
+//         }
+//     }
+// })
 
-.directive('checkItem', function($rootScope) {
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function(scope, element, attrs, model) {
-            var isDisabled = scope.$eval(attrs['ngDisabled']);
+// .directive('checkItem', function($rootScope) {
+//     return {
+//         restrict: 'A',
+//         require: 'ngModel',
+//         link: function(scope, element, attrs, model) {
+//             var isDisabled = scope.$eval(attrs['ngDisabled']);
 
-            console.log(element[0].checked)
+//             console.log(element[0].checked)
 
-            scope.$on('eventCheck.All', function(e, data) {
-                if (isDisabled) return;
-                check(model, data.checkAll)
-                // element[0].click()
-                // element[0].checked = data.checkAll
-                console.log(scope.item.checked + 'all')
-            });
-
-
-            element.bind('click', function() {
-              // $rootScope.$broadcast('eventCheck.item');
-              console.log(scope.item.checked)
-            });
+//             scope.$on('eventCheck.All', function(e, data) {
+//                 if (isDisabled) return;
+//                 check(model, data.checkAll)
+//                 // element[0].click()
+//                 // element[0].checked = data.checkAll
+//                 console.log(scope.item.checked + 'all')
+//             });
 
 
+//             element.bind('click', function() {
+//               // $rootScope.$broadcast('eventCheck.item');
+//               console.log(scope.item.checked)
+//             });
 
-        }
-    }
-})
 
-function check(model, check) {
-    model.$setViewValue(check);
-    model.$render();
-}
+
+//         }
+//     }
+// })
+
+// function check(model, check) {
+//     model.$setViewValue(check);
+//     model.$render();
+// }

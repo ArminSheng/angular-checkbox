@@ -1,3 +1,4 @@
+'use strict';
 let {
     extend,
     forEach
@@ -19,6 +20,7 @@ export default function __func() {
                 items: [],
                 isAllChecked: false
             }, options);
+
         }
 
         /**
@@ -40,7 +42,7 @@ export default function __func() {
         /**
          * Check all checkbox
          */
-        checkAll() {
+        checkAllItem() {
             var self = this;
             forEach(this.items, function(item) {
                 item.check(self.checkAll);
@@ -51,7 +53,8 @@ export default function __func() {
          * check the main checkbox
          */
         _checkTheAll(check) {
-            this.checkAll.check(check);
+            this.allChecker.check(check);
+            // this.checkAll = check;
         }
 
         /*
@@ -75,7 +78,7 @@ export default function __func() {
         checkQueue() {
             var _isAllChecked = true;
             forEach(this.items, function(item) {
-                if (!item.checked) {
+                if (!item._checked) {
                     _isAllChecked = false;
                 }
             });
