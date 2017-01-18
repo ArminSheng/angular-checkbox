@@ -1,0 +1,17 @@
+{
+  "name": "checkbox",
+  "version": "1.0.0",
+  "description": "angular checkbox",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "checkbox"
+  ],
+  "author": "Arminsheng",
+  "license": "ISC",
+  "devDependencies": {
+    "bower": "^1.8.0"
+  }
+}
