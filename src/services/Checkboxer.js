@@ -4,7 +4,7 @@ let {
     forEach
 } = angular;
 
-export default function __func() {
+export default function __func($rootScope) {
 
     class Checkboxer {
         /**
@@ -18,7 +18,8 @@ export default function __func() {
         constructor(options) {
             extend(this, {
                 items: [],
-                isAllChecked: false
+                checkAll: false,
+                hasNoChecked: true
             }, options);
 
         }
@@ -28,10 +29,10 @@ export default function __func() {
          */
         getSeletedItems() {
             var returnArr = [];
-            if (this.items) {
+            if (this.items.length > 0) {
                 forEach(this.items, function(item) {
-                    if (item.checked) {
-                        returnArr.push(item);
+                    if (item._checked) {
+                        returnArr.push(item._item);
                     }
                 });
             }
@@ -42,11 +43,15 @@ export default function __func() {
         /**
          * Check all checkbox
          */
-        checkAllItem() {
-            var self = this;
+        checkAllItem(check) {
+            this.checkAll = check;
+            if (this.items.length === 0) return;
+            console.log(this.items)
             forEach(this.items, function(item) {
-                item.check(self.checkAll);
+                item.check(check);
             });
+
+            this._apply();
         }
 
         /*
@@ -54,7 +59,8 @@ export default function __func() {
          */
         _checkTheAll(check) {
             this.allChecker.check(check);
-            // this.checkAll = check;
+            this.checkAll = check;
+            this._apply();
         }
 
         /*
@@ -67,23 +73,26 @@ export default function __func() {
         /**
          * general method for check
          */
-        check(ngModel, check) {
-            ngModel.$setViewValue(check);
-            ngModel.$render();
+        check(element, check) {
+            element.checked = check;
         }
 
         /**
          * check the queue whether it all checked or not
          */
-        checkQueue() {
-            var _isAllChecked = true;
+        traverseQueue() {
+            var _isAllChecked = true,
+                _hasNoChecked = true;
+
             forEach(this.items, function(item) {
                 if (!item._checked) {
                     _isAllChecked = false;
+                } else {
+                    _hasNoChecked = false;
                 }
             });
 
-            this.isAllChecked = _isAllChecked;
+            this.hasNoChecked = _hasNoChecked;
             this._checkTheAll(_isAllChecked);
          }
 
@@ -91,9 +100,26 @@ export default function __func() {
          * Clear the list
          */
          clearQueue() {
+            forEach(this.items, function(item) {
+                item.unbind();
+            });
+
             this.items = [];
+            this._checkTheAll(false);
          }
+
+         /**
+         * Apply the changes
+         * @private
+         */
+        _apply() {
+            if(!$rootScope.$$phase) $rootScope.$apply();
+        }
     }
 
     return Checkboxer;
 }
+
+__func.$inject = [
+    '$rootScope'
+];

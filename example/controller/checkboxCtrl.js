@@ -3,24 +3,31 @@ var checkbox = angular.module("checkbox", ['angularCheckbox']);
 checkbox
     .controller('checkboxCtrl', function($scope, Checkboxer) {
         // init checkboxer
-        $scope.checkboxer = new Checkboxer();
+        var checkboxer = $scope.checkboxer = new Checkboxer({
+            scope: $scope
+        });
 
         $scope.list = [
             { id: 1, name: 'armin1', status: false },
-            { id: 2, name: 'armin1', status: false },
-            { id: 2, name: 'armin1', status: false },
-            { id: 3, name: 'armin1', status: true },
-            { id: 4, name: 'armin4', status: true },
-            { id: 2, name: 'armin1', status: false },
-            { id: 4, name: 'armin4', status: true },
-            { id: 4, name: 'armin4', status: true },
-            { id: 4, name: 'armin4', status: true },
-            { id: 4, name: 'armin4', status: true },
+            { id: 2, name: 'armin2', status: false },
+            { id: 2, name: 'armin3', status: false },
+            { id: 3, name: 'armin4', status: true },
+            { id: 4, name: 'armin5', status: true },
+            { id: 2, name: 'armin6', status: false },
+            { id: 4, name: 'armin7', status: true },
+            { id: 4, name: 'armin8', status: true },
+            { id: 4, name: 'armin9', status: true },
+            { id: 4, name: 'armin10', status: true },
         ];
 
         $scope.doClick = function() {
-            console.log($scope.list)
+            console.log($scope.checkboxer.getSeletedItems())
+            checkboxer.clearQueue();
         }
+
+        $scope.$watch('checkboxer.checkAll', function(olval, newVal) {
+            console.log(olval, newVal)
+        })
     })
 
 // .directive('checkAll', function($rootScope) {

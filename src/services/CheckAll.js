@@ -37,14 +37,15 @@ export default function __func(CheckDirective) {
         /**
          * Event handler
          */
-         onChange() {
-            this._checked = this.ngModel.$modelValue;
-            this.checkboxer.checkAllItem();
+         onChange(event) {
+            this._checked = this.element[0].checked;
+            this.checkboxer.checkAllItem(this._checked);
+            this.checkboxer.traverseQueue();
          }
 
          check(check) {
-            this.checkboxer.check(this.ngModel, check);
             this._checked = check;
+            this.checkboxer.check(this.element[0], check);
          }
 
 

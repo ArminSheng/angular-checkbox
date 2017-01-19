@@ -4,16 +4,21 @@
     <title>checkbox</title>
 </head>
 <script src="../lib/angular.min.js"></script>
-<script src="../dist/angular-checkbox.js"></script>
+<script src="../dist/angular-checkbox.min.js"></script>
 <script src="controller/checkboxCtrl.js"></script>
+<!-- <script src="../lib/iCheck/icheck.min.js"></script> -->
+<link rel="stylesheet" type="text/css" href="../lib/css/iCheck/custom.css">
 <body ng-controller="checkboxCtrl">
     <ul>
         <label>
-          <input type="checkbox" name="all" ng-model="checkboxer.checkAll" check-all checkboxer="checkboxer">全选</label>
+          <input type="checkbox" icheck name="all" check-all checkboxer="checkboxer">全选</label>
         <li ng-repeat="item in list">
-            <input type="checkbox" ng-model="item.checked" checkboxer="checkboxer" check-item ng-disabled="item.status">
+            <input type="checkbox" checkboxer="checkboxer" check-item="item" ng-disabled="item.status">
             <label>{{ item.name }}</label>
         </li>
     </ul>
+    <button ng-click="doClick()">Get items</button>
+    checkAll: {{ checkboxer.checkAll }}
+    <button ng-disabled="checkboxer.hasNoChecked">Is No Checked</button>
 </body>
 </html>

@@ -82,7 +82,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	angular.module('angularCheckbox', []).factory('Checkboxer', _Checkboxer2.default).factory('CheckAll', _CheckAll2.default).factory('CheckItem', _CheckItem2.default).factory('CheckDirective', _CheckDirective2.default).directive('checkAll', _CheckAll4.default).directive('checkItem', _CheckItem4.default);
+	angular.module('angularCheckbox', []).factory('Checkboxer', _Checkboxer2.default).factory('CheckAll', _CheckAll2.default).factory('CheckItem', _CheckItem2.default).factory('CheckDirective', _CheckDirective2.default).directive('checkAll', _CheckAll4.default).directive('checkItem', _CheckItem4.default).run(['Checkboxer', 'CheckAll', 'CheckItem', 'CheckDirective', function (Checkboxer, CheckAll, CheckItem, CheckDirective) {
+	    Checkboxer.CheckAll = CheckAll;
+	    Checkboxer.CheckItem = CheckItem;
+	    Checkboxer.CheckDirective = CheckDirective;
+	}]);
 
 /***/ },
 /* 1 */
@@ -100,7 +104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _angular = angular,
 	    extend = _angular.extend,
 	    forEach = _angular.forEach;
-	function __func() {
+	function __func($rootScope) {
 	    var Checkboxer = function () {
 	        /**
 	         * Creates instance of {Checkboxer} object
@@ -115,7 +119,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            extend(this, {
 	                items: [],
-	                isAllChecked: false
+	                checkAll: false,
+	                hasNoChecked: true
 	            }, options);
 	        }
 	
@@ -126,10 +131,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        Checkboxer.prototype.getSeletedItems = function getSeletedItems() {
 	            var returnArr = [];
-	            if (this.items) {
+	            if (this.items.length > 0) {
 	                forEach(this.items, function (item) {
-	                    if (item.checked) {
-	                        returnArr.push(item);
+	                    if (item._checked) {
+	                        returnArr.push(item._item);
 	                    }
 	                });
 	            }
@@ -142,11 +147,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	
 	
-	        Checkboxer.prototype.checkAllItem = function checkAllItem() {
-	            var self = this;
+	        Checkboxer.prototype.checkAllItem = function checkAllItem(check) {
+	            this.checkAll = check;
+	            if (this.items.length === 0) return;
+	            console.log(this.items);
 	            forEach(this.items, function (item) {
-	                item.check(self.checkAll);
+	                item.check(check);
 	            });
+	
+	            this._apply();
 	        };
 	
 	        /*
@@ -156,7 +165,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        Checkboxer.prototype._checkTheAll = function _checkTheAll(check) {
 	            this.allChecker.check(check);
-	            // this.checkAll = check;
+	            this.checkAll = check;
+	            this._apply();
 	        };
 	
 	        /*
@@ -173,9 +183,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	
 	
-	        Checkboxer.prototype.check = function check(ngModel, _check) {
-	            ngModel.$setViewValue(_check);
-	            ngModel.$render();
+	        Checkboxer.prototype.check = function check(element, _check) {
+	            element.checked = _check;
 	        };
 	
 	        /**
@@ -183,15 +192,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	
 	
-	        Checkboxer.prototype.checkQueue = function checkQueue() {
-	            var _isAllChecked = true;
+	        Checkboxer.prototype.traverseQueue = function traverseQueue() {
+	            var _isAllChecked = true,
+	                _hasNoChecked = true;
+	
 	            forEach(this.items, function (item) {
 	                if (!item._checked) {
 	                    _isAllChecked = false;
+	                } else {
+	                    _hasNoChecked = false;
 	                }
 	            });
 	
-	            this.isAllChecked = _isAllChecked;
+	            this.hasNoChecked = _hasNoChecked;
 	            this._checkTheAll(_isAllChecked);
 	        };
 	
@@ -201,7 +214,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	        Checkboxer.prototype.clearQueue = function clearQueue() {
+	            forEach(this.items, function (item) {
+	                item.unbind();
+	            });
+	
 	            this.items = [];
+	            this._checkTheAll(false);
+	        };
+	
+	        /**
+	        * Apply the changes
+	        * @private
+	        */
+	
+	
+	        Checkboxer.prototype._apply = function _apply() {
+	            if (!$rootScope.$$phase) $rootScope.$apply();
 	        };
 	
 	        return Checkboxer;
@@ -209,6 +237,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    return Checkboxer;
 	}
+	
+	__func.$inject = ['$rootScope'];
 
 /***/ },
 /* 2 */
@@ -272,14 +302,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	
 	
-	        CheckAll.prototype.onChange = function onChange() {
-	            this._checked = this.ngModel.$modelValue;
-	            this.checkboxer.checkAllItem();
+	        CheckAll.prototype.onChange = function onChange(event) {
+	            this._checked = this.element[0].checked;
+	            this.checkboxer.checkAllItem(this._checked);
+	            this.checkboxer.traverseQueue();
 	        };
 	
 	        CheckAll.prototype.check = function check(_check) {
-	            this.checkboxer.check(this.ngModel, _check);
 	            this._checked = _check;
+	            this.checkboxer.check(this.element[0], _check);
 	        };
 	
 	        return CheckAll;
@@ -348,12 +379,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	        CheckItem.prototype.onChange = function onChange(event) {
-	            this._checked = this.ngModel.$modelValue;
-	            this.checkboxer.checkQueue();
+	            this._checked = this.element[0].checked;
+	            this.checkboxer.traverseQueue();
+	            console.log(this._checked);
 	        };
 	
 	        CheckItem.prototype.check = function check(_check) {
-	            this.checkboxer.check(this.ngModel, _check);
+	            this.checkboxer.check(this.element[0], _check);
 	            this._checked = _check;
 	        };
 	
@@ -402,6 +434,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.element.bind(key, this[prop]);
 	            }
 	        };
+	
+	        /**
+	        * Unbind events
+	        */
+	
+	
+	        CheckDirective.prototype.unbind = function unbind() {
+	            for (var key in this.events) {
+	                this.element.unbind(key, this.events[key]);
+	                this.element.remove();
+	            }
+	        };
+	
 	        /**
 	        * Saves links to functions
 	        * @private
@@ -432,8 +477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __func(CheckAll, Checkboxer) {
 	
 	    return {
-	        require: 'ngModel',
-	        link: function link(scope, element, attrs, ngModel) {
+	        link: function link(scope, element, attrs) {
 	            var checkboxer = scope.$eval(attrs.checkboxer);
 	            if (!checkboxer instanceof Checkboxer) {
 	                throw new TypeError('"checkboxer" must be an instance of Checkboxer');
@@ -442,7 +486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var check = new CheckAll({
 	                checkboxer: checkboxer,
 	                element: element,
-	                ngModel: ngModel
+	                scope: scope
 	            });
 	        }
 	    };
@@ -463,10 +507,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __func(CheckItem, Checkboxer) {
 	
 	    return {
-	        require: 'ngModel',
-	        link: function link(scope, element, attrs, ngModel) {
-	            var checkboxer = scope.$eval(attrs.checkboxer);
-	            var disabled = scope.$eval(attrs['ngDisabled']);
+	        link: function link(scope, element, attrs) {
+	            var checkboxer = scope.$eval(attrs.checkboxer),
+	                disabled = scope.$eval(attrs['ngDisabled']),
+	                item = scope.$eval(attrs['checkItem']);
 	
 	            if (!checkboxer instanceof Checkboxer) {
 	                throw new TypeError('"checkboxer" must be an instance of Checkboxer');
@@ -475,8 +519,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var check = new CheckItem({
 	                checkboxer: checkboxer,
 	                element: element,
-	                ngModel: ngModel,
-	                disabled: disabled
+	                disabled: disabled,
+	                _item: item
 	            });
 	        }
 	    };

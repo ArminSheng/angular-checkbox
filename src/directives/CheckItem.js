@@ -1,11 +1,10 @@
-
 export default function __func(CheckItem, Checkboxer) {
 
     return {
-        require: 'ngModel',
-        link: function(scope, element, attrs, ngModel) {
-            var checkboxer = scope.$eval(attrs.checkboxer);
-            var disabled = scope.$eval(attrs['ngDisabled']);
+        link: function(scope, element, attrs) {
+            var checkboxer = scope.$eval(attrs.checkboxer),
+                disabled = scope.$eval(attrs['ngDisabled']),
+                item = scope.$eval(attrs['checkItem']);
 
             if (!checkboxer instanceof Checkboxer) {
                 throw new TypeError('"checkboxer" must be an instance of Checkboxer');
@@ -14,8 +13,8 @@ export default function __func(CheckItem, Checkboxer) {
             var check = new CheckItem({
                 checkboxer: checkboxer,
                 element: element,
-                ngModel: ngModel,
-                disabled: disabled
+                disabled: disabled,
+                _item: item
             });
         }
     }
