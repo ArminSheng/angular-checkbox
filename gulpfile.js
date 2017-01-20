@@ -10,8 +10,11 @@ let descriptor = require('./package.json');
 
 
 let config = new WebpackConfig(descriptor, {
-  src: './src/',
-  dist: './dist/'
+  src: './src/js/',
+  watchSrc: './src/',
+  dist: './dist/',
+  assets: './src/assets',
+  staticDist: './dist/static'
 });
 
 
@@ -21,18 +24,27 @@ gulp.task(
     return gulp
       .src(config.path.src)
       .pipe(webpackStream(config.get()))
-      // .on('error', function(err) {
-      //   console.log(err.toString())
-      // })
       .pipe(gulp.dest(config.path.dist));
+  }
+);
+
+gulp.task(
+  `${config.name}/buildStatic`,
+  function () {
+    gulp
+      .src(config.path.assets)
+      // .pipe(webpackStream(config.get()))
+      .pipe(gulp.dest(config.path.staticDist));
+      console.log(config.path.assets)
   }
 );
 
 gulp.task(
   `${config.name}/watch`, function () {
     return gulp
-      .watch(`${config.path.src}**/*.*`, [
-        `${config.name}/build`
+      .watch(`${config.path.watchSrc}**/*.*`, [
+        `${config.name}/build`,
+        `${config.name}/buildStatic`
       ]);
   }
 );

@@ -120,7 +120,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            extend(this, {
 	                items: [],
 	                checkAll: false,
-	                hasNoChecked: true
+	                hasNoChecked: true,
+	                size: 'm'
 	            }, options);
 	        }
 	
@@ -150,22 +151,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        Checkboxer.prototype.checkAllItem = function checkAllItem(check) {
 	            this.checkAll = check;
 	            if (this.items.length === 0) return;
-	            console.log(this.items);
+	
 	            forEach(this.items, function (item) {
 	                item.check(check);
 	            });
 	
-	            this._apply();
-	        };
-	
-	        /*
-	         * check the main checkbox
-	         */
-	
-	
-	        Checkboxer.prototype._checkTheAll = function _checkTheAll(check) {
-	            this.allChecker.check(check);
-	            this.checkAll = check;
 	            this._apply();
 	        };
 	
@@ -193,6 +183,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	        Checkboxer.prototype.traverseQueue = function traverseQueue() {
+	            if (this.items.length === 0) return;
+	
 	            var _isAllChecked = true,
 	                _hasNoChecked = true;
 	
@@ -219,7 +211,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	
 	            this.items = [];
+	            this.hasNoChecked = true;
 	            this._checkTheAll(false);
+	        };
+	
+	        /*
+	        * check the main checkbox
+	        */
+	
+	
+	        Checkboxer.prototype._checkTheAll = function _checkTheAll(check) {
+	            this.allChecker && this.allChecker.check(check);
+	            this.checkAll = check;
+	            this._apply();
 	        };
 	
 	        /**
@@ -267,8 +271,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param {Object} options
 	         * @param {Object} options.checkboxer
 	         * @param {HTMLElement} options.element
+	         * @param {HTMLElement} options._input
 	         * @param {Object} options.events
-	         * @param {Object} options.ngModel
 	         * @constructor
 	         */
 	        function CheckAll(options) {
@@ -295,6 +299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        CheckAll.prototype._init = function _init() {
 	            this.checkboxer.allChecker = this;
 	            this.checkboxer.checkAll = this._checked;
+	            this.element.addClass('arm-size-' + this.checkboxer.size);
 	        };
 	
 	        /**
@@ -303,14 +308,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	        CheckAll.prototype.onChange = function onChange(event) {
-	            this._checked = this.element[0].checked;
+	            this._checked = this._input[0].checked;
 	            this.checkboxer.checkAllItem(this._checked);
 	            this.checkboxer.traverseQueue();
 	        };
 	
+	        /**
+	        * check method
+	        */
+	
+	
 	        CheckAll.prototype.check = function check(_check) {
 	            this._checked = _check;
-	            this.checkboxer.check(this.element[0], _check);
+	            this.checkboxer.check(this._input[0], _check);
 	        };
 	
 	        return CheckAll;
@@ -347,6 +357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param {Object} options
 	         * @param {Object} options.checkboxer
 	         * @param {HTMLElement} options.element
+	         * @param {HTMLElement} options._input
 	         * @constructor
 	         */
 	        function CheckItem(options) {
@@ -370,7 +381,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	        CheckItem.prototype._init = function _init() {
-	            !this.disabled && this.checkboxer.addToList(this);
+	            this._input.attr('disabled', this.disabled);
+	            this.element.addClass('arm-size-' + this.checkboxer.size);
+	
+	            if (this.disabled) {
+	                this.element.addClass('arm-check-disabled');
+	            } else {
+	                this.checkboxer.addToList(this);
+	            }
 	        };
 	
 	        /**
@@ -379,13 +397,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	        CheckItem.prototype.onChange = function onChange(event) {
-	            this._checked = this.element[0].checked;
+	            this._checked = this._input[0].checked;
 	            this.checkboxer.traverseQueue();
-	            console.log(this._checked);
 	        };
 	
 	        CheckItem.prototype.check = function check(_check) {
-	            this.checkboxer.check(this.element[0], _check);
+	            this.checkboxer.check(this._input[0], _check);
 	            this._checked = _check;
 	        };
 	
@@ -400,7 +417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -477,8 +494,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __func(CheckAll, Checkboxer) {
 	
 	    return {
+	        template: '<div class="arm-checkbox-wrap">' + '<input type="checkbox">' + '<span class="arm-check-icon"></span>' + '</div>',
+	        replace: true,
+	        restrict: 'E',
 	        link: function link(scope, element, attrs) {
-	            var checkboxer = scope.$eval(attrs.checkboxer);
+	            var checkboxer = scope.$eval(attrs.checkboxer),
+	                input = element.find('input');
+	
 	            if (!checkboxer instanceof Checkboxer) {
 	                throw new TypeError('"checkboxer" must be an instance of Checkboxer');
 	            }
@@ -486,7 +508,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var check = new CheckAll({
 	                checkboxer: checkboxer,
 	                element: element,
-	                scope: scope
+	                scope: scope,
+	                _input: input
 	            });
 	        }
 	    };
@@ -507,10 +530,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __func(CheckItem, Checkboxer) {
 	
 	    return {
+	        template: '<div class="arm-checkbox-wrap">' + '<input type="checkbox">' + '<span class="arm-check-icon"></span>' + '</div>',
+	        replace: true,
+	        restrict: 'E',
 	        link: function link(scope, element, attrs) {
 	            var checkboxer = scope.$eval(attrs.checkboxer),
 	                disabled = scope.$eval(attrs['ngDisabled']),
-	                item = scope.$eval(attrs['checkItem']);
+	                item = scope.$eval(attrs['item']),
+	                input = element.find('input');
 	
 	            if (!checkboxer instanceof Checkboxer) {
 	                throw new TypeError('"checkboxer" must be an instance of Checkboxer');
@@ -520,7 +547,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                checkboxer: checkboxer,
 	                element: element,
 	                disabled: disabled,
-	                _item: item
+	                _item: item,
+	                _input: input
 	            });
 	        }
 	    };

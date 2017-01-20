@@ -9,7 +9,6 @@ import CheckAllDirective from './directives/CheckAll';
 import CheckItemDirective from './directives/CheckItem';
 
 
-
 angular
     .module('angularCheckbox', [])
     .factory('Checkboxer', serviceCheckboxer)

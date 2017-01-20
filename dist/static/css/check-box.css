@@ -1,0 +1,17 @@
+.arm-checkbox-wrap {display: inline-block; position: relative;vertical-align: text-bottom;}
+.arm-checkbox-wrap input[type="checkbox"] {width: 100%; height: 100%; opacity: 0; position: absolute; left: 0; right: 0; z-index: 10; margin: 0; cursor: pointer; }
+.arm-check-icon {position: absolute; left: 0; right: 0; width: 100%; height: 100%; background: url('../img/green.png') no-repeat;background-size: cover;}
+.arm-checkbox-wrap input[type="checkbox"][disabled] {cursor: not-allowed;position: relative;}
+.arm-checkbox-wrap.arm-check-disabled .arm-check-icon:before {content: ''; position: absolute; top: 50%; left: 50%; width: 55%; height: 1px; background: #aaa; transform: translate(-50%); }
+
+.arm-size-m {width: 22px; height: 22px;}
+.arm-size-m:hover .arm-check-icon {background-position: -22px 0;}
+.arm-size-m input[type="checkbox"]:checked + .arm-check-icon {background-position: -44px 0;}
+
+.arm-size-s {width: 14px; height: 14px;}
+.arm-size-s:hover .arm-check-icon {background-position: -14px 0;}
+.arm-size-s input[type="checkbox"]:checked + .arm-check-icon {background-position: -28px 0;}
+
+.arm-size-l {width: 30px; height: 30px;}
+.arm-size-l:hover .arm-check-icon {background-position: -30px 0;}
+.arm-size-l input[type="checkbox"]:checked + .arm-check-icon {background-position: -60px 0;}

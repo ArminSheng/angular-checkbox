@@ -1,4 +1,5 @@
 'use strict';
+
 let {
     extend
 } = angular;
@@ -10,6 +11,7 @@ export default function __func(CheckDirective) {
          * @param {Object} options
          * @param {Object} options.checkboxer
          * @param {HTMLElement} options.element
+         * @param {HTMLElement} options._input
          * @constructor
          */
         constructor(options) {
@@ -27,20 +29,26 @@ export default function __func(CheckDirective) {
          *Push check item into checkboxer
          */
         _init() {
-            !this.disabled && this.checkboxer.addToList(this);
+            this._input.attr('disabled', this.disabled);
+            this.element.addClass('arm-size-' + this.checkboxer.size);
+
+            if (this.disabled) {
+                this.element.addClass('arm-check-disabled');
+            } else {
+                this.checkboxer.addToList(this)
+            }
         }
 
         /**
          * Event handler
          */
          onChange(event) {
-            this._checked = this.element[0].checked;
+            this._checked = this._input[0].checked;
             this.checkboxer.traverseQueue();
-            console.log(this._checked)
          }
 
          check(check) {
-            this.checkboxer.check(this.element[0], check);
+            this.checkboxer.check(this._input[0], check);
             this._checked = check;
          }
     }

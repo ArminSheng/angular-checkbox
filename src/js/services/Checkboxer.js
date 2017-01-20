@@ -1,4 +1,5 @@
 'use strict';
+
 let {
     extend,
     forEach
@@ -19,9 +20,9 @@ export default function __func($rootScope) {
             extend(this, {
                 items: [],
                 checkAll: false,
-                hasNoChecked: true
+                hasNoChecked: true,
+                size: 'm'
             }, options);
-
         }
 
         /**
@@ -46,20 +47,11 @@ export default function __func($rootScope) {
         checkAllItem(check) {
             this.checkAll = check;
             if (this.items.length === 0) return;
-            console.log(this.items)
+
             forEach(this.items, function(item) {
                 item.check(check);
             });
 
-            this._apply();
-        }
-
-        /*
-         * check the main checkbox
-         */
-        _checkTheAll(check) {
-            this.allChecker.check(check);
-            this.checkAll = check;
             this._apply();
         }
 
@@ -81,6 +73,8 @@ export default function __func($rootScope) {
          * check the queue whether it all checked or not
          */
         traverseQueue() {
+            if (this.items.length === 0) return;
+
             var _isAllChecked = true,
                 _hasNoChecked = true;
 
@@ -105,8 +99,18 @@ export default function __func($rootScope) {
             });
 
             this.items = [];
+            this.hasNoChecked = true;
             this._checkTheAll(false);
          }
+
+         /*
+         * check the main checkbox
+         */
+        _checkTheAll(check) {
+            this.allChecker && this.allChecker.check(check);
+            this.checkAll = check;
+            this._apply();
+        }
 
          /**
          * Apply the changes

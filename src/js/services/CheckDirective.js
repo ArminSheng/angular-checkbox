@@ -1,7 +1,8 @@
+'use strict';
 
 let {
     extend
-    } = angular;
+} = angular;
 
 export default function __func() {
     return class CheckDirective {
